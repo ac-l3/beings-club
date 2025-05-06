@@ -1,0 +1,15 @@
+{
+  "frame": {
+    "version": "1",
+    "name": "Beings Club",
+    "iconUrl": "https://placehold.co/1024x1024.png",
+    "homeUrl": "https://beings-club.vercel.app/",
+    "splashBackgroundColor": "#ffffff",
+    "primaryCategory": "social",
+    "subtitle": "A gathering place for beings",
+    "description": "Beings are gathering soon. Join us May 18th, 8pm UTC.",
+    "tagline": "Gather with beings",
+    "ogTitle": "Beings Club",
+    "ogDescription": "Beings are gathering soon. Join us May 18th, 8pm UTC."
+  }
+} 
