@@ -19,13 +19,11 @@ export default function RootLayout({
       <head>
         {/* Adobe Fonts Roc Grotesk */}
         <link rel="stylesheet" href="https://use.typekit.net/adq1bgp.css" />
-        {/* Farcaster Mini App Embed Meta Tags */}
-        <meta property="fc:frame" content="vNext" />
-        <meta property="fc:frame:image" content="https://beings-club.vercel.app/splash.png" />
-        <meta property="fc:frame:button:1" content="Open Beings Club" />
-        <meta property="og:title" content="Beings Club" />
-        <meta property="og:description" content="A gathering place for beings" />
-        <meta property="og:image" content="https://beings-club.vercel.app/splash.png" />
+        {/* Farcaster Mini App Embed Meta Tag (correct format) */}
+        <meta
+          name="fc:frame"
+          content='{"version":"next","imageUrl":"https://beings-club.vercel.app/splash.png","button":{"title":"Open Beings Club","action":{"type":"launch_frame","url":"https://beings-club.vercel.app","name":"Beings Club","splashImageUrl":"https://beings-club.vercel.app/splash.png","splashBackgroundColor":"#000000"}}}'
+        />
       </head>
       <body className="bg-background dark">
         <Providers>{children}</Providers>
