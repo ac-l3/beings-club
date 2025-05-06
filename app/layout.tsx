@@ -22,7 +22,7 @@ export default function RootLayout({
         {/* Farcaster Mini App Embed Meta Tag (correct format) */}
         <meta
           name="fc:frame"
-          content='{"version":"1","imageUrl":"https://beings-club.vercel.app/embed-preview.png","button":{"title":"Open Beings Club","action":{"type":"launch_frame","url":"https://beings-club.vercel.app","name":"Beings Club","splashImageUrl":"https://beings-club.vercel.app/splash.png","splashBackgroundColor":"#000000"}}}'
+          content='{"version":"next","imageUrl":"https://beings-club.vercel.app/embed-preview.png","button":{"title":"Open Beings Club","action":{"type":"launch_frame","url":"https://beings-club.vercel.app","name":"Beings Club","splashImageUrl":"https://beings-club.vercel.app/splash.png","splashBackgroundColor":"#000000"}}}'
         />
       </head>
       <body className="bg-background dark">
