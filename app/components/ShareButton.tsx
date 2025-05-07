@@ -17,8 +17,8 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
       setIsSharing(true);
       setError(null);
 
-      // Create the frame URL with the correct format
-      const frameUrl = 'https://warpcast.com/miniapps/2YffL1OlzYu1/beings-club';
+      // Use the direct app URL
+      const frameUrl = 'https://beings-club.vercel.app/';
 
       // Create the cast text with the frame URL
       const castText = `${eventText}\n\n${frameUrl}`;
