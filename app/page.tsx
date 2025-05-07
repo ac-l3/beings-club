@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { sdk } from "@farcaster/frame-sdk";
+import ShareButton from './components/ShareButton';
 
 // Responsive positions for stars/explosions based on your reference image
 const ICONS = [
@@ -259,35 +260,7 @@ export default function BeingsClubWelcome() {
               zIndex: 2
             }}
           />
-          {/* Circle with SHARE */}
-          <img
-            src="/pp0503-46.png"
-            alt="circle-line1"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "contain",
-              position: "absolute",
-              left: 0,
-              top: 0,
-              zIndex: 1
-            }}
-          />
-          <span
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: "50%",
-              transform: "translate(-50%, -50%)",
-              zIndex: 3,
-              fontWeight: "bold",
-              fontSize: "1rem",
-              color: "#111",
-              letterSpacing: 0
-            }}
-          >
-            SHARE
-          </span>
+          <ShareButton />
         </div>
         {/* Row 5: empty for spacing */}
         <div />
