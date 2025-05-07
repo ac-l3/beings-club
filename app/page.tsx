@@ -10,35 +10,35 @@ const ICONS = [
     src: "/pp0503-47.png", // star
     alt: "star",
     left: "16vw",
-    top: "71vh",
+    top: "61vh",
     comment: "Bottom far left star"
   },
   {
     src: "/pp0503-48.png", // explosion
     alt: "explosion",
     left: "15vw",
-    top: "94vh",
+    top: "90vh",
     comment: "Bottom left explosion"
   },
   {
     src: "/pp0503-47.png", // star
     alt: "star",
     left: "32vw",
-    top: "85vh",
+    top: "80vh",
     comment: "Left center star"
   },
   {
     src: "/pp0503-47.png", // star
     alt: "star",
     left: "50vw",
-    top: "75vh",
+    top: "70vh",
     comment: "Center bottom star"
   },
   {
     src: "/pp0503-47.png", // star
     alt: "star",
     left: "83vw",
-    top: "70vh",
+    top: "60vh",
     comment: "Right center star"
   },
   {
@@ -73,25 +73,24 @@ export default function BeingsClubWelcome() {
     sdk.actions.ready();
 
     const handleScroll = (e: WheelEvent) => {
-      if (revealed) return;
-      
       // Accumulate scroll progress
       const newProgress = Math.min(Math.max(scrollProgress + e.deltaY * 0.002, 0), 1);
       setScrollProgress(newProgress);
       
-      // Trigger reveal when scroll threshold is reached
+      // Update revealed state based on progress
       if (newProgress >= 1) {
         setRevealed(true);
+      } else if (newProgress <= 0) {
+        setRevealed(false);
       }
     };
 
     const handleTouchStart = (e: TouchEvent) => {
-      if (revealed) return;
       setTouchStart(e.touches[0].clientY);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
-      if (revealed || touchStart === null) return;
+      if (touchStart === null) return;
       
       const currentY = e.touches[0].clientY;
       const deltaY = touchStart - currentY; // Positive when swiping up
@@ -100,9 +99,11 @@ export default function BeingsClubWelcome() {
       const newProgress = Math.min(Math.max(scrollProgress + deltaY * 0.005, 0), 1);
       setScrollProgress(newProgress);
       
-      // Trigger reveal when scroll threshold is reached
+      // Update revealed state based on progress
       if (newProgress >= 1) {
         setRevealed(true);
+      } else if (newProgress <= 0) {
+        setRevealed(false);
       }
     };
 
@@ -187,9 +188,11 @@ export default function BeingsClubWelcome() {
             textAlign: "center",
             color: "#111",
             fontWeight: "bold",
-            fontSize: "1.2rem",
+            fontSize: "1.05rem",
             lineHeight: 1.4,
             maxWidth: "80%",
+            animation: "bounce 2s ease-in-out infinite",
+            animationDelay: "0s"
           }}
         >
           Beings are gathering soon.
@@ -248,7 +251,9 @@ export default function BeingsClubWelcome() {
               fontWeight: "bold",
               fontSize: "1.05rem",
               color: "#111",
-              lineHeight: 1.05
+              lineHeight: 1.05,
+              animation: "bounceSmall 2.3s ease-in-out infinite",
+              animationDelay: "0.7s"
             }}
           >
             May 18th, 8pm UTC
@@ -263,8 +268,8 @@ export default function BeingsClubWelcome() {
           style={{
             position: "absolute",
             left: "50%",
-            top: "60vh",
-            transform: "translate(-50%, 0)",
+            top: "50vh",
+            transform: "translate(-40%, 0)",
             zIndex: 2,
             width: "100px",
             height: "100px",
@@ -272,6 +277,8 @@ export default function BeingsClubWelcome() {
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
+            animation: "bounceSmall 2.1s ease-in-out infinite",
+            animationDelay: "0.3s"
           }}
         >
           {/* Character (bean1) - easily movable in all directions */}
@@ -281,7 +288,7 @@ export default function BeingsClubWelcome() {
               width: "54px",
               height: "54px",
               transform: "translate(-50%, -50%)", // Center the character
-              left: "45%", // Center horizontally
+              left: "-10%", // Center horizontally
               top: "-8%", // Center vertically
               zIndex: 2,
             }}
@@ -305,6 +312,7 @@ export default function BeingsClubWelcome() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              marginLeft: "-110px"
             }}
           >
             <img
@@ -387,4 +395,23 @@ export default function BeingsClubWelcome() {
       </div>
     </div>
   );
+}
+
+const bounceKeyframes = `
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes bounceSmall {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+`;
+
+// Add the keyframes to the document
+if (typeof document !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = bounceKeyframes;
+  document.head.appendChild(style);
 }
