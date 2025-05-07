@@ -8,24 +8,11 @@ export default function Head() {
     <>
       {/* Adobe Fonts Roc Grotesk */}
       <link rel="stylesheet" href="https://use.typekit.net/adq1bgp.css" />
-      {/* Farcaster Mini App Embed Meta Tag */}
-      <meta
-        name="fc:frame"
-        content={JSON.stringify({
-          version: 'next',
-          imageUrl,
-          button: {
-            title: 'Open Beings Club',
-            action: {
-              type: 'launch_frame',
-              url: 'https://beings-club.vercel.app',
-              name: 'Beings Club',
-              splashImageUrl: 'https://beings-club.vercel.app/splash.png',
-              splashBackgroundColor: '#000000',
-            },
-          },
-        })}
-      />
+      {/* Minimal Farcaster Frame Meta Tags */}
+      <meta property="fc:frame" content="vNext" />
+      <meta property="fc:frame:image" content="https://beings-club.vercel.app/embed-preview.png" />
+      <meta property="fc:frame:button:1" content="Open Beings Club" />
+      <meta property="og:image" content="https://beings-club.vercel.app/embed-preview.png" />
     </>
   );
 } 
