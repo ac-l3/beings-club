@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { sdk } from "@farcaster/frame-sdk";
 
 interface ShareButtonProps {
   eventText?: string;
@@ -16,14 +15,12 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
     try {
       setIsSharing(true);
       setError(null);
-
-      // Use the canonical app URL as the card, not in the text
-      const appUrl = 'https://beings-club.vercel.app';
-      const castText = eventText;
-      await sdk.actions.openUrl(
-        `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&url=${encodeURIComponent(appUrl)}`
+      const appUrl = 'https://beings-club.vercel.app?ref=' + Math.random().toString(36).substring(2, 10);
+      const castText = `${eventText}\n\n${appUrl}`;
+      window.open(
+        `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`,
+        '_blank'
       );
-
     } catch (err) {
       console.error('Error sharing:', err);
       setError('Failed to share. Please try again.');
