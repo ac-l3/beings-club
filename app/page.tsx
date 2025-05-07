@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { sdk } from "@farcaster/frame-sdk";
-import ShareButton from './components/ShareButton';
+import ShareButton from './ShareButton';
 
 // Responsive positions for stars/explosions based on your reference image
 const ICONS = [
@@ -249,18 +249,27 @@ export default function BeingsClubWelcome() {
           {/* Character (bean1) - absolutely positioned so feet touch the circle */}
           <img
             src="/pp0503-45.png"
-            alt="bean1"
+            alt="character"
             style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
               position: "absolute",
-              left: "45%",
-              top: "-52px", // Adjust this value for perfect feet alignment
-              transform: "translateX(-50%)",
-              width: "64px",
-              height: "64px",
-              zIndex: 2
+              left: 0,
+              top: 0,
+              zIndex: 1,
+              pointerEvents: "none"
             }}
           />
-          <ShareButton />
+          
+          {/* Share Button */}
+          <div style={{ position: "absolute", bottom: "-60px", left: "50%", transform: "translateX(-50%)" }}>
+            <ShareButton
+              eventTitle="Beings Club Gathering"
+              eventDate="May 18th, 8pm UTC"
+              eventUrl={typeof window !== 'undefined' ? window.location.origin : ''}
+            />
+          </div>
         </div>
         {/* Row 5: empty for spacing */}
         <div />
