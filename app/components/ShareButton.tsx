@@ -17,11 +17,11 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
       setIsSharing(true);
       setError(null);
 
-      // Create the frame URL with the share-frame.png image
+      // Create the frame URL with the ?share=1 param
       const frameUrl = new URL('https://beings-club.vercel.app');
-      frameUrl.searchParams.set('image', 'share-frame.png');
+      frameUrl.searchParams.set('share', '1');
 
-      // Create the cast text with the frame URL
+      // Create the cast text with the frame URL (no direct PNG link)
       const castText = `${eventText}\n\n${frameUrl.toString()}`;
 
       // Use the Farcaster SDK to open the URL in a new window
