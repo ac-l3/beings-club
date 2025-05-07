@@ -17,12 +17,12 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
       setIsSharing(true);
       setError(null);
 
-      // Use the canonical app URL only
+      // Use the canonical app URL as the card, not in the text
       const appUrl = 'https://beings-club.vercel.app';
-      const castText = `${eventText}\n\n${appUrl}`;
-
-      // Use the Farcaster SDK to open the URL in a new window
-      await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`);
+      const castText = eventText;
+      await sdk.actions.openUrl(
+        `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}&url=${encodeURIComponent(appUrl)}`
+      );
 
     } catch (err) {
       console.error('Error sharing:', err);
