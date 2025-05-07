@@ -17,12 +17,9 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
       setIsSharing(true);
       setError(null);
 
-      // Create the frame URL with the ?share=1 param
-      const frameUrl = new URL('https://beings-club.vercel.app');
-      frameUrl.searchParams.set('share', '1');
-
-      // Create the cast text with the frame URL (no direct PNG link)
-      const castText = `${eventText}\n\n${frameUrl.toString()}`;
+      // Use the Farcaster mini app deep link for the cast
+      const miniAppDeepLink = "https://warpcast.com/miniapps/2YffL1OlzYu1/beings-club?share=1";
+      const castText = `${eventText}\n\n${miniAppDeepLink}`;
 
       // Use the Farcaster SDK to open the URL in a new window
       // This will trigger the Farcaster client to create a cast
