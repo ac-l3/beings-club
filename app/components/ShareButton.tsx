@@ -22,11 +22,17 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
       frameUrl.searchParams.set('share', '1');
       frameUrl.searchParams.set('t', Date.now().toString()); // cache buster
       const castText = `${eventText}\n\n${frameUrl.toString()}`;
+      const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`;
 
-      // Use the Farcaster SDK to open the URL in a new window
-      // This will trigger the Farcaster client to create a cast
-      await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`);
-
+      // Try to use the frame context if available
+      const win = typeof window !== 'undefined' ? (window as any) : undefined;
+      if (win?.frame?.sdk?.actions?.openUrl) {
+        await win.frame.sdk.actions.openUrl(warpcastUrl);
+      } else if (sdk?.actions?.openUrl) {
+        await sdk.actions.openUrl(warpcastUrl);
+      } else {
+        window.open(warpcastUrl, '_blank');
+      }
     } catch (err) {
       console.error('Error sharing:', err);
       setError('Failed to share. Please try again.');
