@@ -63,6 +63,7 @@ export default function BeingsClubWelcome() {
   const [revealed, setRevealed] = useState(false);
   const [pressing, setPressing] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
   const holdTimeout = useRef<NodeJS.Timeout | null>(null);
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
@@ -84,9 +85,43 @@ export default function BeingsClubWelcome() {
       }
     };
 
+    const handleTouchStart = (e: TouchEvent) => {
+      if (revealed) return;
+      setTouchStart(e.touches[0].clientY);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (revealed || touchStart === null) return;
+      
+      const currentY = e.touches[0].clientY;
+      const deltaY = touchStart - currentY; // Positive when swiping up
+      
+      // Accumulate scroll progress
+      const newProgress = Math.min(Math.max(scrollProgress + deltaY * 0.005, 0), 1);
+      setScrollProgress(newProgress);
+      
+      // Trigger reveal when scroll threshold is reached
+      if (newProgress >= 1) {
+        setRevealed(true);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setTouchStart(null);
+    };
+
     window.addEventListener('wheel', handleScroll);
-    return () => window.removeEventListener('wheel', handleScroll);
-  }, [revealed, scrollProgress]);
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('wheel', handleScroll);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [revealed, scrollProgress, touchStart]);
 
   const animateProgress = (timestamp: number) => {
     if (!pressing || revealed) return;
