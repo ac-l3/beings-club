@@ -17,22 +17,13 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
       setIsSharing(true);
       setError(null);
 
-      // Use the canonical app URL with ?share=1 and a cache-busting param
-      const frameUrl = new URL('https://beings-club.vercel.app');
-      frameUrl.searchParams.set('share', '1');
-      frameUrl.searchParams.set('t', Date.now().toString()); // cache buster
-      const castText = `${eventText}\n\n${frameUrl.toString()}`;
-      const warpcastUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`;
+      // Use the canonical app URL only
+      const appUrl = 'https://beings-club.vercel.app';
+      const castText = `${eventText}\n\n${appUrl}`;
 
-      // Try to use the frame context if available
-      const win = typeof window !== 'undefined' ? (window as any) : undefined;
-      if (win?.frame?.sdk?.actions?.openUrl) {
-        await win.frame.sdk.actions.openUrl(warpcastUrl);
-      } else if (sdk?.actions?.openUrl) {
-        await sdk.actions.openUrl(warpcastUrl);
-      } else {
-        window.open(warpcastUrl, '_blank');
-      }
+      // Use the Farcaster SDK to open the URL in a new window
+      await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`);
+
     } catch (err) {
       console.error('Error sharing:', err);
       setError('Failed to share. Please try again.');

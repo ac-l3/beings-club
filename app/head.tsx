@@ -1,23 +1,14 @@
 import { headers } from 'next/headers';
 
 export default function Head() {
-  // Get the current URL and query params
-  const headersList = headers();
-  const url = headersList.get('x-url') || '';
-  let imageUrl = 'https://beings-club.vercel.app/embed-preview.png';
-
-  try {
-    const u = new URL(url);
-    if (u.searchParams.get('share') === '1') {
-      imageUrl = 'https://beings-club.vercel.app/share-frame.png';
-    }
-  } catch {}
+  // Always use the main embed preview image
+  const imageUrl = 'https://beings-club.vercel.app/embed-preview.png';
 
   return (
     <>
       {/* Adobe Fonts Roc Grotesk */}
       <link rel="stylesheet" href="https://use.typekit.net/adq1bgp.css" />
-      {/* Farcaster Mini App Embed Meta Tag (dynamic) */}
+      {/* Farcaster Mini App Embed Meta Tag */}
       <meta
         name="fc:frame"
         content={JSON.stringify({
