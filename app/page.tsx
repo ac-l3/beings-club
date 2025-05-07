@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { sdk } from "@farcaster/frame-sdk";
-import ShareButton from './ShareButton';
 
 // Responsive positions for stars/explosions based on your reference image
 const ICONS = [
@@ -249,7 +248,21 @@ export default function BeingsClubWelcome() {
           {/* Character (bean1) - absolutely positioned so feet touch the circle */}
           <img
             src="/pp0503-45.png"
-            alt="character"
+            alt="bean1"
+            style={{
+              position: "absolute",
+              left: "45%",
+              top: "-52px", // Adjust this value for perfect feet alignment
+              transform: "translateX(-50%)",
+              width: "64px",
+              height: "64px",
+              zIndex: 2
+            }}
+          />
+          {/* Circle with SHARE */}
+          <img
+            src="/pp0503-46.png"
+            alt="circle-line1"
             style={{
               width: "100%",
               height: "100%",
@@ -257,19 +270,24 @@ export default function BeingsClubWelcome() {
               position: "absolute",
               left: 0,
               top: 0,
-              zIndex: 1,
-              pointerEvents: "none"
+              zIndex: 1
             }}
           />
-          
-          {/* Share Button */}
-          <div style={{ position: "absolute", bottom: "-60px", left: "50%", transform: "translateX(-50%)" }}>
-            <ShareButton
-              eventTitle="Beings Club Gathering"
-              eventDate="May 18th, 8pm UTC"
-              eventUrl={typeof window !== 'undefined' ? window.location.origin : ''}
-            />
-          </div>
+          <span
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)",
+              zIndex: 3,
+              fontWeight: "bold",
+              fontSize: "1rem",
+              color: "#111",
+              letterSpacing: 0
+            }}
+          >
+            SHARE
+          </span>
         </div>
         {/* Row 5: empty for spacing */}
         <div />
