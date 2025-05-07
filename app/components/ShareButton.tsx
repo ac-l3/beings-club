@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { sdk } from "@farcaster/frame-sdk";
 
 interface ShareButtonProps {
   eventText?: string;
@@ -15,12 +16,15 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
     try {
       setIsSharing(true);
       setError(null);
-      const appUrl = 'https://beings-club.vercel.app?ref=' + Math.random().toString(36).substring(2, 10);
-      const castText = `${eventText}\n\n${appUrl}`;
-      window.open(
-        `https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`,
-        '_blank'
-      );
+
+      // Use the Farcaster mini app deep link for the cast
+      const miniAppDeepLink = "https://warpcast.com/miniapps/2YffL1OlzYu1/beings-club?share=1";
+      const castText = `${eventText}\n\n${miniAppDeepLink}`;
+
+      // Use the Farcaster SDK to open the URL in a new window
+      // This will trigger the Farcaster client to create a cast
+      await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`);
+
     } catch (err) {
       console.error('Error sharing:', err);
       setError('Failed to share. Please try again.');
