@@ -356,7 +356,7 @@ export default function BeingsClubWelcome() {
             // Scale: normal until z > 0, then scale up for whoosh
             const scale = z < 0 ? 1 : 1 + (z / 400) * 1.5;
             const style = {
-              position: "absolute",
+              position: "absolute" as const,
               left: icon.left,
               top: icon.top,
               width: "12px",
