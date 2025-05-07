@@ -17,11 +17,11 @@ export default function ShareButton({ eventText = "Hey everyone, I'm going to th
       setIsSharing(true);
       setError(null);
 
-      // Use the direct app URL
-      const frameUrl = 'https://beings-club.vercel.app/';
+      // Create the frame URL with the correct format
+      const frameUrl = 'https://warpcast.com/miniapps/2YffL1OlzYu1/beings-club';
 
-      // Create the cast text with the frame URL (no space after URL)
-      const castText = `${eventText}\n\n@${frameUrl}`;
+      // Create the cast text with the frame URL, ensuring no extra spaces
+      const castText = `${eventText}\n\n${frameUrl}`.trim();
 
       // Use the Farcaster SDK to open the URL in a new window
       await sdk.actions.openUrl(`https://warpcast.com/~/compose?text=${encodeURIComponent(castText)}`);
