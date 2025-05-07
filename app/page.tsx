@@ -237,7 +237,7 @@ export default function BeingsClubWelcome() {
         <div
           style={{
             position: "absolute",
-            top: "15vh",
+            top: "20vh",
             left: "50%",
             transform: "translateX(-50%)",
             textAlign: "center",
