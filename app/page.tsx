@@ -59,16 +59,6 @@ const ICONS = [
 
 const HOLD_DURATION = 700; // ms
 
-// Set the scroll distance multiplier for a longer journey
-const SCROLL_DISTANCE = 4; // 4x longer than before
-
-// Easing function for scroll progress
-function easeInOutCubic(x: number) {
-  return x < 0.5
-    ? 4 * x * x * x
-    : 1 - Math.pow(-2 * x + 2, 3) / 2;
-}
-
 export default function BeingsClubWelcome() {
   const [revealed, setRevealed] = useState(false);
   const [pressing, setPressing] = useState(false);
@@ -82,14 +72,15 @@ export default function BeingsClubWelcome() {
     sdk.actions.ready();
 
     const handleScroll = (e: WheelEvent) => {
-      // Allow back and forth travel
-      // Make the scroll journey longer
-      const newProgress = Math.min(Math.max(scrollProgress + e.deltaY * 0.002 / SCROLL_DISTANCE, 0), 1);
+      if (revealed) return;
+      
+      // Accumulate scroll progress
+      const newProgress = Math.min(Math.max(scrollProgress + e.deltaY * 0.002, 0), 1);
       setScrollProgress(newProgress);
+      
+      // Trigger reveal when scroll threshold is reached
       if (newProgress >= 1) {
         setRevealed(true);
-      } else if (newProgress < 1) {
-        setRevealed(false);
       }
     };
 
@@ -126,19 +117,6 @@ export default function BeingsClubWelcome() {
     setIsWarping(false);
   };
 
-  // Use eased progress for all animations
-  const easedProgress = easeInOutCubic(scrollProgress);
-
-  // Helper for staggered element arrival with only opacity and blur (no scale or Z)
-  function getStaggeredFadeStyle(start: number, end: number, baseBlur = 10, finalBlur = 0, progressOverride?: number) {
-    const prog = progressOverride !== undefined ? progressOverride : scrollProgress;
-    const p = Math.min(Math.max((prog - start) / (end - start), 0), 1);
-    return {
-      opacity: p,
-      filter: `blur(${baseBlur + (finalBlur - baseBlur) * p}px)`
-    };
-  }
-
   return (
     <div
       style={{
@@ -151,14 +129,13 @@ export default function BeingsClubWelcome() {
         transition: "filter 1.4s cubic-bezier(.4,2,.6,1), transform 1.4s cubic-bezier(.4,2,.6,1)",
         filter: isWarping ? "blur(8px) brightness(1.2)" : "none",
         transform: isWarping ? "scale(1.04)" : "none",
-        perspective: "1000px",
       }}
     >
-      {/* First screen: Only the portal intro text */}
+      {/* First screen: Initial message */}
       <div
         style={{
-          opacity: revealed || scrollProgress > 0 ? 0 : 1,
-          pointerEvents: revealed || scrollProgress > 0 ? 'none' : 'auto',
+          opacity: revealed ? 0 : 1,
+          pointerEvents: revealed ? 'none' : 'auto',
           transition: 'opacity 0.5s, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
           position: 'absolute',
           inset: 0,
@@ -166,57 +143,42 @@ export default function BeingsClubWelcome() {
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 2,
-          transform: `scale(${1 + scrollProgress * 2}) translateZ(${scrollProgress * 1000}px)`,
-          filter: `blur(${scrollProgress * 5}px) brightness(${1 + scrollProgress})`,
+          transform: `translateY(${-scrollProgress * 100}%)`,
+          filter: `blur(${scrollProgress * 10}px)`,
         }}
       >
         <div
           style={{
-            fontWeight: 'bold',
-            fontSize: 22,
-            color: '#111',
-            textAlign: 'center',
-            fontFamily: 'monospace',
-            letterSpacing: 0,
-            userSelect: 'none',
+            textAlign: "center",
+            color: "#111",
+            fontWeight: "bold",
+            fontSize: "1.2rem",
+            lineHeight: 1.4,
+            maxWidth: "80%",
           }}
         >
           Beings are gathering soon.
         </div>
       </div>
 
-      {/* Portal tunnel effect */}
+      {/* Portal effect overlay */}
       <div
         style={{
           position: 'absolute',
           inset: 0,
-          background: `
-            radial-gradient(
-              circle at 50% 50%,
-              transparent 0%,
-              rgba(241, 236, 206, 0.1) 20%,
-              rgba(241, 236, 206, 0.2) 40%,
-              rgba(241, 236, 206, 0.3) 60%,
-              rgba(241, 236, 206, 0.4) 80%,
-              var(--background) 100%
-            )
-          `,
-          opacity: easedProgress,
-          transform: `
-            scale(${1 + easedProgress * 0.7})
-            rotate(${easedProgress * 360}deg)
-            translateZ(${easedProgress * 500}px)
-          `,
+          background: 'radial-gradient(circle at 50% 50%, transparent 0%, var(--background) 70%)',
+          opacity: scrollProgress,
+          transform: `scale(${1 + scrollProgress * 0.2})`,
           transition: 'opacity 0.3s, transform 0.3s',
           zIndex: 1,
           pointerEvents: 'none',
         }}
       />
 
-      {/* Second screen: Invitation revealed, with staggered elements */}
+      {/* Second screen: Invitation revealed */}
       <div
         style={{
-          opacity: revealed ? 1 : scrollProgress,
+          opacity: revealed ? 1 : 0,
           pointerEvents: revealed ? 'auto' : 'none',
           transition: 'opacity 0.5s, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
           position: 'absolute',
@@ -228,22 +190,22 @@ export default function BeingsClubWelcome() {
           alignItems: 'center',
           justifyItems: 'center',
           zIndex: 3,
+          transform: `translateY(${(1 - scrollProgress) * 100}%)`,
         }}
       >
         {/* Row 1: empty for spacing */}
         <div />
-        {/* Row 2: Event text (arrives 0.35-0.55) */}
+        {/* Row 2: Event text */}
         <div
           style={{
             position: "absolute",
             top: "15vh",
             left: "50%",
+            transform: "translateX(-50%)",
+            textAlign: "center",
             width: "100vw",
             zIndex: 2,
-            color: "#111",
-            textAlign: "center",
-            transform: "translateX(-50%)",
-            ...getStaggeredFadeStyle(0.35, 0.55, 10, 0, easedProgress),
+            color: "#111"
           }}
         >
           <div
@@ -261,31 +223,31 @@ export default function BeingsClubWelcome() {
         </div>
         {/* Row 3: empty for spacing */}
         <div />
-        {/* Row 4: Character and Share Button (arrives 0.55-0.75) */}
+        {/* Row 4: Character and Share Button */}
         <div
           style={{
             position: "absolute",
             left: "50%",
             top: "60vh",
+            transform: "translate(-50%, 0)",
+            zIndex: 2,
             width: "100px",
             height: "100px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             justifyContent: "center",
-            transform: "translate(-50%, 0)",
-            ...getStaggeredFadeStyle(0.55, 0.75, 10, 0, easedProgress),
           }}
         >
-          {/* Character (bean1) */}
+          {/* Character (bean1) - easily movable in all directions */}
           <div
             style={{
               position: "absolute",
               width: "54px",
               height: "54px",
-              transform: "translate(-50%, -50%)",
-              left: "45%",
-              top: "-8%",
+              transform: "translate(-50%, -50%)", // Center the character
+              left: "45%", // Center horizontally
+              top: "-8%", // Center vertically
               zIndex: 2,
             }}
           >
@@ -340,45 +302,30 @@ export default function BeingsClubWelcome() {
         <div />
         {/* Row 6: Stars, Explosions, and /beingsclub absolutely positioned over the full viewport */}
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100vw', height: '100vh', pointerEvents: 'none', zIndex: 10 }}>
-          {/* Staggered stars (arrive 0.15-0.45) */}
+          {/* Grid reference: 8 columns x 12 rows */}
           {ICONS.map((icon, i) => {
-            // Each star can have a slightly different arrival window for more depth
-            const base = 0.15 + (i * 0.03);
-            const end = 0.45 + (i * 0.03);
-            const baseZ = -1200 + i * 120; // Stagger Z-depth for parallax
-            const finalZ = 400; // Pass through the camera
-            // Calculate progress for this star
-            const p = Math.min(Math.max((easedProgress - base) / (end - base), 0), 1);
-            // Z position for this star
-            const z = baseZ + (finalZ - baseZ) * p;
-            // Opacity: 1 when z < 0, fades to 0 as z > 0
-            const opacity = z < 0 ? 1 : Math.max(1 - (z / 400), 0);
-            // Scale: normal until z > 0, then scale up for whoosh
-            const scale = z < 0 ? 1 : 1 + (z / 400) * 1.5;
-            const style = {
-              position: "absolute" as const,
-              left: icon.left,
-              top: icon.top,
-              width: "12px",
-              height: "12px",
-              zIndex: 1,
-              animation: `soft-blink 8s ease-in-out infinite`,
-              animationDelay: `${Math.random() * 8}s`,
-              opacity,
-              transform: `translateZ(${z}px) scale(${scale})`,
-              filter: `blur(${10 * (1 - p)}px)`
-            };
+            // Randomize duration between 7s and 12s
+            const duration = 7 + Math.random() * 5;
             return (
               <img
                 key={i}
                 src={icon.src}
                 alt={icon.alt}
-                style={style}
+                style={{
+                  position: "absolute",
+                  left: icon.left,
+                  top: icon.top,
+                  width: "12px",
+                  height: "12px",
+                  zIndex: 1,
+                  animation: `soft-blink ${duration}s ease-in-out infinite`,
+                  animationDelay: `${Math.random() * duration}s`,
+                }}
                 data-comment={icon.comment}
               />
             );
           })}
-          {/* /beingsclub text (arrives 0.8-1.0) */}
+          {/* /beingsclub text in lower left, aligned to grid */}
           <a
             href="https://warpcast.com/~/channel/beings-club"
             target="_blank"
@@ -387,16 +334,16 @@ export default function BeingsClubWelcome() {
               position: "absolute",
               left: "50%",
               bottom: "5vh",
+              transform: "translateX(-50%)",
               fontSize: "1rem",
               color: "#111",
+              opacity: 1,
               fontFamily: "monospace",
               letterSpacing: "0.01em",
               fontWeight: "bold",
               zIndex: 9999,
               textDecoration: "none",
               pointerEvents: "auto",
-              transform: "translateX(-50%)",
-              ...getStaggeredFadeStyle(0.8, 1.0, 10, 0, easedProgress),
             }}
           >
             /beings-club
