@@ -82,6 +82,8 @@ export default function BeingsClubWelcome() {
     "/sounds/green.wav",
     "/sounds/pink.wav"
   ];
+  // Audio unlock state
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
 
   useEffect(() => {
     sdk.actions.ready();
@@ -170,12 +172,43 @@ export default function BeingsClubWelcome() {
     setIsWarping(false);
   };
 
+  // Transparent unlock button handler
+  const handleUnlockAudio = async () => {
+    try {
+      // Create a silent audio buffer and play it
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const buffer = ctx.createBuffer(1, 1, 22050);
+      const source = ctx.createBufferSource();
+      source.buffer = buffer;
+      source.connect(ctx.destination);
+      source.start(0);
+      setAudioUnlocked(true);
+    } catch (e) {
+      // fallback: try to play a silent HTML5 audio
+      const silent = new window.Audio();
+      silent.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=";
+      silent.play();
+      setAudioUnlocked(true);
+    }
+  };
+
+  // Toggle audio on/off
+  const handleToggleAudio = () => {
+    if (!audioUnlocked) {
+      handleUnlockAudio();
+    } else {
+      setAudioUnlocked(false);
+    }
+  };
+
   // Quadrant click handler
   const handleQuadrantClick = (idx: number) => {
-    // Play sound
-    const audio = new window.Audio(quadrantSounds[idx]);
-    audio.currentTime = 0;
-    audio.play();
+    // Play sound only if audio is unlocked
+    if (audioUnlocked) {
+      const audio = new window.Audio(quadrantSounds[idx]);
+      audio.currentTime = 0;
+      audio.play();
+    }
     // Flash color
     setFlash({ color: quadrantColors[idx], visible: true });
     setTimeout(() => setFlash(f => f && { ...f, visible: false }), 120); // quick in
@@ -473,6 +506,34 @@ export default function BeingsClubWelcome() {
           </a>
         </div>
       </div>
+
+      {/* Audio toggle button (top right) */}
+      <button
+        aria-label={audioUnlocked ? "Turn sound off" : "Turn sound on"}
+        onClick={handleToggleAudio}
+        style={{
+          position: "fixed",
+          top: 12,
+          right: 12,
+          width: 36,
+          height: 36,
+          opacity: 0.32,
+          zIndex: 200,
+          border: "none",
+          background: "transparent",
+          cursor: "pointer",
+          padding: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <img
+          src={audioUnlocked ? "/icons/sound-on.png" : "/icons/sound-off.png"}
+          alt={audioUnlocked ? "Sound on" : "Sound off"}
+          style={{ width: 32, height: 32, display: "block" }}
+        />
+      </button>
     </div>
   );
 }
