@@ -30,7 +30,7 @@ export default function RootLayout({
         <meta property="og:image" content="https://beings-club.vercel.app/embed-preview.png" />
         <meta property="og:url" content="https://beings-club.vercel.app/" />
       </head>
-      <body className="bg-background dark">
+      <body className="bg-background">
         <Providers>{children}</Providers>
       </body>
     </html>
