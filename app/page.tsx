@@ -156,7 +156,7 @@ export default function BeingsClubWelcome() {
   return (
     <div
       style={{
-        background: "var(--background)",
+        background: "#F1ECCE",
         minHeight: "100vh",
         width: "100vw",
         position: "relative",
