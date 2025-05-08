@@ -199,6 +199,15 @@ export default function BeingsClubWelcome() {
     });
   };
 
+  // Play unlocked sound when invite screen appears
+  useEffect(() => {
+    if (revealed && isSoundOn) {
+      const audio = new window.Audio('/sounds/unlocked.mp3');
+      audio.currentTime = 0;
+      audio.play();
+    }
+  }, [revealed, isSoundOn]);
+
   return (
     <div
       style={{
