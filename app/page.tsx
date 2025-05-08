@@ -221,8 +221,8 @@ export default function BeingsClubWelcome() {
           right: 18,
           zIndex: 200,
           cursor: "pointer",
-          width: 32,
-          height: 32,
+          width: 24,
+          height: 24,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -233,7 +233,7 @@ export default function BeingsClubWelcome() {
         <img
           src={isSoundOn ? "/sound-on.png" : "/sound-off.png"}
           alt={isSoundOn ? "Sound on" : "Sound off"}
-          style={{ width: 22, height: 22 }}
+          style={{ width: 16, height: 16 }}
         />
       </div>
       {/* Color flash overlay */}
