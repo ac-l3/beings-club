@@ -68,61 +68,78 @@ export default function BeingsClubWelcome() {
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
   const [isWarping, setIsWarping] = useState(false);
+  // Quadrant click state
+  const [quadrantsClicked, setQuadrantsClicked] = useState([false, false, false, false]);
+  const [hasAutoRevealed, setHasAutoRevealed] = useState(false);
+  // Flash state
+  const [flash, setFlash] = useState<{ color: string; visible: boolean } | null>(null);
+  // Quadrant colors
+  const quadrantColors = ["#FD3D44", "#3F3FFC", "#009245", "#FF7BAC"];
+  // Quadrant sounds
+  const quadrantSounds = [
+    "/sounds/red.wav",
+    "/sounds/blue.wav",
+    "/sounds/green.wav",
+    "/sounds/pink.wav"
+  ];
 
   useEffect(() => {
     sdk.actions.ready();
 
+    // Only allow scroll up (decrease progress) until auto-reveal
     const handleScroll = (e: WheelEvent) => {
-      // Accumulate scroll progress
+      if (!hasAutoRevealed && !revealed) {
+        // Only allow scroll up
+        if (e.deltaY < 0) {
+          const newProgress = Math.max(scrollProgress + e.deltaY * 0.002, 0);
+          setScrollProgress(newProgress);
+          if (newProgress <= 0) setRevealed(false);
+        }
+        return;
+      }
+      // After auto-reveal, allow normal scroll
       const newProgress = Math.min(Math.max(scrollProgress + e.deltaY * 0.002, 0), 1);
       setScrollProgress(newProgress);
-      
-      // Update revealed state based on progress
-      if (newProgress >= 1) {
-        setRevealed(true);
-      } else if (newProgress <= 0) {
-        setRevealed(false);
-      }
+      if (newProgress >= 1) setRevealed(true);
+      else if (newProgress <= 0) setRevealed(false);
     };
 
     const handleTouchStart = (e: TouchEvent) => {
       setTouchStart(e.touches[0].clientY);
     };
-
     const handleTouchMove = (e: TouchEvent) => {
       if (touchStart === null) return;
-      
       const currentY = e.touches[0].clientY;
-      const deltaY = touchStart - currentY; // Positive when swiping up
-      
-      // Accumulate scroll progress
+      const deltaY = touchStart - currentY;
+      if (!hasAutoRevealed && !revealed) {
+        // Only allow scroll up
+        if (deltaY < 0) {
+          const newProgress = Math.max(scrollProgress + deltaY * 0.005, 0);
+          setScrollProgress(newProgress);
+          if (newProgress <= 0) setRevealed(false);
+        }
+        return;
+      }
+      // After auto-reveal, allow normal scroll
       const newProgress = Math.min(Math.max(scrollProgress + deltaY * 0.005, 0), 1);
       setScrollProgress(newProgress);
-      
-      // Update revealed state based on progress
-      if (newProgress >= 1) {
-        setRevealed(true);
-      } else if (newProgress <= 0) {
-        setRevealed(false);
-      }
+      if (newProgress >= 1) setRevealed(true);
+      else if (newProgress <= 0) setRevealed(false);
     };
-
     const handleTouchEnd = () => {
       setTouchStart(null);
     };
-
     window.addEventListener('wheel', handleScroll);
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('touchend', handleTouchEnd);
-
     return () => {
       window.removeEventListener('wheel', handleScroll);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [revealed, scrollProgress, touchStart]);
+  }, [revealed, scrollProgress, touchStart, hasAutoRevealed]);
 
   const animateProgress = (timestamp: number) => {
     if (!pressing || revealed) return;
@@ -153,6 +170,32 @@ export default function BeingsClubWelcome() {
     setIsWarping(false);
   };
 
+  // Quadrant click handler
+  const handleQuadrantClick = (idx: number) => {
+    // Play sound
+    const audio = new window.Audio(quadrantSounds[idx]);
+    audio.currentTime = 0;
+    audio.play();
+    // Flash color
+    setFlash({ color: quadrantColors[idx], visible: true });
+    setTimeout(() => setFlash(f => f && { ...f, visible: false }), 120); // quick in
+    setTimeout(() => setFlash(null), 120 + 1200); // slow, chic fade out
+    // Mark as clicked
+    setQuadrantsClicked(prev => {
+      if (prev[idx]) return prev;
+      const updated = prev.map((v, i) => (i === idx ? true : v));
+      // If all four clicked and not yet auto-revealed, reveal
+      if (updated.every(Boolean) && !hasAutoRevealed) {
+        setTimeout(() => {
+          setRevealed(true);
+          setHasAutoRevealed(true);
+          setScrollProgress(1);
+        }, 400); // slight delay for last flash
+      }
+      return updated;
+    });
+  };
+
   return (
     <div
       style={{
@@ -167,7 +210,21 @@ export default function BeingsClubWelcome() {
         transform: isWarping ? "scale(1.04)" : "none",
       }}
     >
-      {/* First screen: Initial message */}
+      {/* Color flash overlay */}
+      {flash && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: flash.color,
+            opacity: flash.visible ? 1 : 0,
+            pointerEvents: "none",
+            transition: "opacity 1.2s cubic-bezier(.77,0,.18,1)",
+            zIndex: 100,
+          }}
+        />
+      )}
+      {/* First screen: Initial message + quadrant overlay */}
       <div
         style={{
           opacity: revealed ? 0 : 1,
@@ -196,6 +253,29 @@ export default function BeingsClubWelcome() {
           }}
         >
           Beings are gathering soon.
+        </div>
+        {/* Quadrant overlay */}
+        <div style={{ position: "absolute", inset: 0, width: "100vw", height: "100vh", zIndex: 10 }}>
+          {/* Top left */}
+          <div
+            onClick={() => handleQuadrantClick(0)}
+            style={{ position: "absolute", left: 0, top: 0, width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
+          />
+          {/* Top right */}
+          <div
+            onClick={() => handleQuadrantClick(1)}
+            style={{ position: "absolute", left: "50vw", top: 0, width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
+          />
+          {/* Bottom left */}
+          <div
+            onClick={() => handleQuadrantClick(2)}
+            style={{ position: "absolute", left: 0, top: "50vh", width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
+          />
+          {/* Bottom right */}
+          <div
+            onClick={() => handleQuadrantClick(3)}
+            style={{ position: "absolute", left: "50vw", top: "50vh", width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
+          />
         </div>
       </div>
 
@@ -251,7 +331,7 @@ export default function BeingsClubWelcome() {
               fontWeight: "bold",
               fontSize: "1.05rem",
               color: "#111",
-              lineHeight: 1.05,
+              lineHeight: 1.25,
               animation: "bounceSmall 2.3s ease-in-out infinite",
               animationDelay: "0.7s"
             }}
