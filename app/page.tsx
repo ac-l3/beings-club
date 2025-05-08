@@ -529,7 +529,7 @@ export default function BeingsClubWelcome() {
         }}
       >
         <img
-          src={audioUnlocked ? "/icons/sound-on.png" : "/icons/sound-off.png"}
+          src={audioUnlocked ? "/sound-on.png" : "/sound-off.png"}
           alt={audioUnlocked ? "Sound on" : "Sound off"}
           style={{ width: 32, height: 32, display: "block" }}
         />
