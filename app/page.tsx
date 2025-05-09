@@ -347,7 +347,7 @@ export default function BeingsClubWelcome() {
                   }
                 }
               };
-              sdk.actions.addFrame(frame);
+              sdk.actions.addFrame();
             }}
           >
             <img
