@@ -62,85 +62,40 @@ const HOLD_DURATION = 700; // ms
 export default function BeingsClubWelcome() {
   const [revealed, setRevealed] = useState(false);
   const [pressing, setPressing] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
   const holdTimeout = useRef<NodeJS.Timeout | null>(null);
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
   const [isWarping, setIsWarping] = useState(false);
-  // Quadrant click state
-  const [quadrantsClicked, setQuadrantsClicked] = useState([false, false, false, false]);
-  const [hasAutoRevealed, setHasAutoRevealed] = useState(false);
-  // Flash state
-  const [flash, setFlash] = useState<{ color: string; visible: boolean } | null>(null);
-  // Quadrant colors
-  const quadrantColors = ["#FD3D44", "#3F3FFC", "#009245", "#FF7BAC"];
-  // Quadrant sounds
-  const quadrantSounds = [
-    "/sounds/red.wav",
-    "/sounds/blue.wav",
-    "/sounds/green.wav",
-    "/sounds/pink.wav"
-  ];
-  const [isSoundOn, setIsSoundOn] = useState(true);
 
   useEffect(() => {
     sdk.actions.ready();
-
-    // Only allow scroll up (decrease progress) until auto-reveal
+    // Allow scroll up from the second screen to return to the main screen
     const handleScroll = (e: WheelEvent) => {
-      if (!hasAutoRevealed && !revealed) {
-        // Only allow scroll up
-        if (e.deltaY < 0) {
-          const newProgress = Math.max(scrollProgress + e.deltaY * 0.002, 0);
-          setScrollProgress(newProgress);
-          if (newProgress <= 0) setRevealed(false);
-        }
-        return;
+      if (revealed && e.deltaY < 0) {
+        setRevealed(false);
       }
-      // After auto-reveal, allow normal scroll
-      const newProgress = Math.min(Math.max(scrollProgress + e.deltaY * 0.002, 0), 1);
-      setScrollProgress(newProgress);
-      if (newProgress >= 1) setRevealed(true);
-      else if (newProgress <= 0) setRevealed(false);
     };
-
     const handleTouchStart = (e: TouchEvent) => {
-      setTouchStart(e.touches[0].clientY);
+      (window as any)._touchStartY = e.touches[0].clientY;
     };
     const handleTouchMove = (e: TouchEvent) => {
-      if (touchStart === null) return;
-      const currentY = e.touches[0].clientY;
-      const deltaY = touchStart - currentY;
-      if (!hasAutoRevealed && !revealed) {
-        // Only allow scroll up
-        if (deltaY < 0) {
-          const newProgress = Math.max(scrollProgress + deltaY * 0.005, 0);
-          setScrollProgress(newProgress);
-          if (newProgress <= 0) setRevealed(false);
+      if (revealed && typeof (window as any)._touchStartY === 'number') {
+        const deltaY = (window as any)._touchStartY - e.touches[0].clientY;
+        if (deltaY < -20) { // swipe down
+          setRevealed(false);
+          (window as any)._touchStartY = undefined;
         }
-        return;
       }
-      // After auto-reveal, allow normal scroll
-      const newProgress = Math.min(Math.max(scrollProgress + deltaY * 0.005, 0), 1);
-      setScrollProgress(newProgress);
-      if (newProgress >= 1) setRevealed(true);
-      else if (newProgress <= 0) setRevealed(false);
-    };
-    const handleTouchEnd = () => {
-      setTouchStart(null);
     };
     window.addEventListener('wheel', handleScroll);
     window.addEventListener('touchstart', handleTouchStart);
     window.addEventListener('touchmove', handleTouchMove);
-    window.addEventListener('touchend', handleTouchEnd);
     return () => {
       window.removeEventListener('wheel', handleScroll);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchend', handleTouchEnd);
     };
-  }, [revealed, scrollProgress, touchStart, hasAutoRevealed]);
+  }, [revealed]);
 
   const animateProgress = (timestamp: number) => {
     if (!pressing || revealed) return;
@@ -149,6 +104,9 @@ export default function BeingsClubWelcome() {
     const prog = Math.min(elapsed / HOLD_DURATION, 1);
     if (prog < 1) {
       rafRef.current = requestAnimationFrame(animateProgress);
+    } else {
+      setRevealed(true);
+      setPressing(false);
     }
   };
 
@@ -171,42 +129,14 @@ export default function BeingsClubWelcome() {
     setIsWarping(false);
   };
 
-  // Quadrant click handler
-  const handleQuadrantClick = (idx: number) => {
-    // Play sound only if sound is on
-    if (isSoundOn) {
-      const audio = new window.Audio(quadrantSounds[idx]);
-      audio.currentTime = 0;
-      audio.play();
-    }
-    // Flash color
-    setFlash({ color: quadrantColors[idx], visible: true });
-    setTimeout(() => setFlash(f => f && { ...f, visible: false }), 120); // quick in
-    setTimeout(() => setFlash(null), 120 + 1200); // slow, chic fade out
-    // Mark as clicked
-    setQuadrantsClicked(prev => {
-      if (prev[idx]) return prev;
-      const updated = prev.map((v, i) => (i === idx ? true : v));
-      // If all four clicked and not yet auto-revealed, reveal
-      if (updated.every(Boolean) && !hasAutoRevealed) {
-        setTimeout(() => {
-          setRevealed(true);
-          setHasAutoRevealed(true);
-          setScrollProgress(1);
-        }, 400); // slight delay for last flash
-      }
-      return updated;
-    });
-  };
-
   // Play unlocked sound when invite screen appears
   useEffect(() => {
-    if (revealed && isSoundOn) {
+    if (revealed) {
       const audio = new window.Audio('/sounds/unlocked.mp3');
       audio.currentTime = 0;
       audio.play();
     }
-  }, [revealed, isSoundOn]);
+  }, [revealed]);
 
   return (
     <div
@@ -217,62 +147,25 @@ export default function BeingsClubWelcome() {
         position: "relative",
         fontFamily: "monospace",
         overflow: "hidden",
-        transition: "filter 1.4s cubic-bezier(.4,2,.6,1), transform 1.4s cubic-bezier(.4,2,.6,1)",
+        transition: "filter 1.4s cubic-bezier(.4,2,.6,1)",
         filter: isWarping ? "blur(8px) brightness(1.2)" : "none",
-        transform: isWarping ? "scale(1.04)" : "none",
       }}
     >
-      {/* Sound toggle icon */}
-      <div
-        style={{
-          position: "fixed",
-          top: 18,
-          right: 18,
-          zIndex: 200,
-          cursor: "pointer",
-          width: 24,
-          height: 24,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-        onClick={() => setIsSoundOn(s => !s)}
-        title={isSoundOn ? "Sound on" : "Sound off"}
-      >
-        <img
-          src={isSoundOn ? "/sound-on.png" : "/sound-off.png"}
-          alt={isSoundOn ? "Sound on" : "Sound off"}
-          style={{ width: 16, height: 16 }}
-        />
-      </div>
-      {/* Color flash overlay */}
-      {flash && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: flash.color,
-            opacity: flash.visible ? 1 : 0,
-            pointerEvents: "none",
-            transition: "opacity 1.2s cubic-bezier(.77,0,.18,1)",
-            zIndex: 100,
-          }}
-        />
-      )}
-      {/* First screen: Initial message + quadrant overlay */}
+      {/* First screen: Initial message */}
       <div
         style={{
           opacity: revealed ? 0 : 1,
           pointerEvents: revealed ? 'none' : 'auto',
-          transition: 'opacity 0.5s, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'transform 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s',
           position: 'absolute',
           inset: 0,
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 2,
-          transform: `translateY(${-scrollProgress * 100}%)`,
-          filter: `blur(${scrollProgress * 10}px)`,
+          filter: revealed ? 'blur(10px)' : 'none',
+          transform: revealed ? 'translateY(-100vh)' : 'translateY(0)',
         }}
       >
         <div
@@ -289,42 +182,51 @@ export default function BeingsClubWelcome() {
         >
           Beings are gathering soon.
         </div>
-        {/* Quadrant overlay */}
-        <div style={{ position: "absolute", inset: 0, width: "100vw", height: "100vh", zIndex: 10 }}>
-          {/* Top left */}
-          <div
-            onClick={() => handleQuadrantClick(0)}
-            style={{ position: "absolute", left: 0, top: 0, width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
-          />
-          {/* Top right */}
-          <div
-            onClick={() => handleQuadrantClick(1)}
-            style={{ position: "absolute", left: "50vw", top: 0, width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
-          />
-          {/* Bottom left */}
-          <div
-            onClick={() => handleQuadrantClick(2)}
-            style={{ position: "absolute", left: 0, top: "50vh", width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
-          />
-          {/* Bottom right */}
-          <div
-            onClick={() => handleQuadrantClick(3)}
-            style={{ position: "absolute", left: "50vw", top: "50vh", width: "50vw", height: "50vh", cursor: "pointer", background: "transparent" }}
-          />
+        {/* Press and Hold Button */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '6vh',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '100vw',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            zIndex: 20,
+            pointerEvents: 'auto',
+          }}
+        >
+          <button
+            onMouseDown={handlePress}
+            onMouseUp={handleRelease}
+            onMouseLeave={handleRelease}
+            onTouchStart={e => { e.preventDefault(); handlePress(); }}
+            onTouchEnd={handleRelease}
+            style={{
+              background: 'transparent',
+              color: '#888',
+              border: 'none',
+              fontWeight: 'bold',
+              fontSize: '0.8rem',
+              padding: '12px 32px',
+              opacity: 0.5,
+              letterSpacing: 0.01,
+              outline: 'none',
+              cursor: 'pointer',
+              transition: 'opacity 0.2s',
+              userSelect: 'none',
+            }}
+          >
+            PRESS AND HOLD
+          </button>
         </div>
       </div>
 
       {/* Portal effect overlay */}
       <div
         style={{
-          position: 'absolute',
-          inset: 0,
-          background: 'radial-gradient(circle at 50% 50%, transparent 0%, var(--background) 70%)',
-          opacity: scrollProgress,
-          transform: `scale(${1 + scrollProgress * 0.2})`,
-          transition: 'opacity 0.3s, transform 0.3s',
-          zIndex: 1,
-          pointerEvents: 'none',
+          display: 'none',
         }}
       />
 
@@ -333,7 +235,7 @@ export default function BeingsClubWelcome() {
         style={{
           opacity: revealed ? 1 : 0,
           pointerEvents: revealed ? 'auto' : 'none',
-          transition: 'opacity 0.5s, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'transform 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.5s',
           position: 'absolute',
           inset: 0,
           display: 'grid',
@@ -343,7 +245,7 @@ export default function BeingsClubWelcome() {
           alignItems: 'center',
           justifyItems: 'center',
           zIndex: 3,
-          transform: `translateY(${(1 - scrollProgress) * 100}%)`,
+          transform: revealed ? 'translateY(0)' : 'translateY(100vh)',
         }}
       >
         {/* Row 1: empty for spacing */}
@@ -427,7 +329,25 @@ export default function BeingsClubWelcome() {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              marginLeft: "-110px"
+              marginLeft: "-110px",
+              cursor: "pointer"
+            }}
+            onClick={() => {
+              const frame = {
+                version: "next",
+                imageUrl: "https://beings-club.vercel.app/api/og",
+                button: {
+                  title: "Join Beings Club",
+                  action: {
+                    type: "launch_frame",
+                    url: "https://beings-club.vercel.app",
+                    name: "Beings Club",
+                    splashImageUrl: "https://beings-club.vercel.app/share-frame.png",
+                    splashBackgroundColor: "#F1ECCE"
+                  }
+                }
+              };
+              sdk.actions.addFrame(frame);
             }}
           >
             <img
