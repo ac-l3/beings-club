@@ -372,12 +372,12 @@ export default function BeingsClubWelcome() {
                   position: "relative",
                   zIndex: 3,
                   fontWeight: "bold",
-                  fontSize: "1rem",
+                  fontSize: "0.85rem",
                   color: "#111",
                   letterSpacing: 0,
                   marginTop: "0.5px",
                   textAlign: "center",
-                  lineHeight: 1.55,
+                  lineHeight: 1.75,
                 }}
               >
                 ADD<br /><span style={{ lineHeight: 1, marginTop: '-6px', display: 'block' }}>MINIAPP</span>
@@ -423,21 +423,8 @@ export default function BeingsClubWelcome() {
                 top: SHARE_BTN_TOP,
               }}
               onClick={() => {
-                const frame = {
-                  version: "next",
-                  imageUrl: "https://beings-club.vercel.app/api/og",
-                  button: {
-                    title: "Join Beings Club",
-                    action: {
-                      type: "launch_frame",
-                      url: "https://beings-club.vercel.app",
-                      name: "Beings Club",
-                      splashImageUrl: "https://beings-club.vercel.app/share-frame.png",
-                      splashBackgroundColor: "#F1ECCE"
-                    }
-                  }
-                };
-                sdk.actions.addFrame();
+                const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent('hihi this is a test')}&embeds=${encodeURIComponent('https://beings-club.vercel.app/share-frame.png')}`;
+                window.open(shareUrl, '_blank');
               }}
             >
               <img
@@ -456,7 +443,7 @@ export default function BeingsClubWelcome() {
                   position: "relative",
                   zIndex: 3,
                   fontWeight: "bold",
-                  fontSize: "1rem",
+                  fontSize: "0.85rem",
                   color: "#111",
                   letterSpacing: 0,
                   marginTop: "2px",
