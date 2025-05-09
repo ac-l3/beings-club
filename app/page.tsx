@@ -422,9 +422,16 @@ export default function BeingsClubWelcome() {
                 left: SHARE_BTN_LEFT,
                 top: SHARE_BTN_TOP,
               }}
-              onClick={() => {
-                const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent('hihi this is a test')}&embeds=${encodeURIComponent('https://beings-club.vercel.app/share-frame.png')}`;
-                window.open(shareUrl, '_blank');
+              onClick={async () => {
+                if ('composeIntent' in sdk.actions) {
+                  // @ts-expect-error: composeIntent may not be typed in SDK yet
+                  await sdk.actions.composeIntent({
+                    text: 'hihi this is a test https://beings-club.vercel.app'
+                  });
+                } else {
+                  const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent('hihi this is a test https://beings-club.vercel.app')}`;
+                  window.open(shareUrl, '_blank');
+                }
               }}
             >
               <img
