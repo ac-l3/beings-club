@@ -67,6 +67,20 @@ export default function BeingsClubWelcome() {
   const startTimeRef = useRef<number | null>(null);
   const [isWarping, setIsWarping] = useState(false);
 
+  // === BEGIN: Button/Bean Position Controls ===
+  // You can easily tweak these numbers to move the beans/buttons
+  const GROUP_LEFT_OFFSET = -10; // px, negative = move group left, positive = right
+  const MINIAPP_BEAN_LEFT = -15; // px, negative = left of button center
+  const MINIAPP_BEAN_TOP = -49;   // px, negative = above button
+  const MINIAPP_BTN_LEFT = -110;     // px, relative to group center
+  const MINIAPP_BTN_TOP = -20;      // px
+
+  const SHARE_BEAN_LEFT = -240;      // px, negative = left of button center
+  const SHARE_BEAN_TOP = -77;     // px, negative = above button
+  const SHARE_BTN_LEFT = -140;     // px, relative to group center
+  const SHARE_BTN_TOP = 10;        // px
+  // === END: Button/Bean Position Controls ===
+
   useEffect(() => {
     sdk.actions.ready();
     // Allow scroll up from the second screen to return to the main screen
@@ -284,96 +298,173 @@ export default function BeingsClubWelcome() {
         <div
           style={{
             position: "absolute",
-            left: "50%",
+            left: `calc(50% + ${GROUP_LEFT_OFFSET}px)`,
             top: "50vh",
             transform: "translate(-40%, 0)",
             zIndex: 2,
-            width: "100px",
+            width: "260px",
             height: "100px",
             display: "flex",
-            flexDirection: "column",
+            flexDirection: "row",
             alignItems: "center",
             justifyContent: "center",
+            gap: "40px",
             animation: "bounceSmall 2.1s ease-in-out infinite",
             animationDelay: "0.3s"
           }}
         >
-          {/* Character (bean1) - easily movable in all directions */}
-          <div
-            style={{
-              position: "absolute",
-              width: "54px",
-              height: "54px",
-              transform: "translate(-50%, -50%)", // Center the character
-              left: "-10%", // Center horizontally
-              top: "-8%", // Center vertically
-              zIndex: 2,
-            }}
-          >
-            <img
-              src="/pp0503-45.png"
-              alt="bean1"
+          {/* Left: ADD MINIAPP button and bean */}
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            {/* Bean2 */}
+            <div
               style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </div>
-          {/* Circle with SHARE */}
-          <div
-            style={{
-              position: "relative",
-              width: "80px",
-              height: "80px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              marginLeft: "-110px",
-              cursor: "pointer"
-            }}
-            onClick={() => {
-              const frame = {
-                version: "next",
-                imageUrl: "https://beings-club.vercel.app/api/og",
-                button: {
-                  title: "Join Beings Club",
-                  action: {
-                    type: "launch_frame",
-                    url: "https://beings-club.vercel.app",
-                    name: "Beings Club",
-                    splashImageUrl: "https://beings-club.vercel.app/share-frame.png",
-                    splashBackgroundColor: "#F1ECCE"
-                  }
-                }
-              };
-              sdk.actions.addFrame();
-            }}
-          >
-            <img
-              src="/pp0503-46.png"
-              alt="circle-line1"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
                 position: "absolute",
-                zIndex: 1,
-              }}
-            />
-            <span
-              style={{
-                position: "relative",
-                zIndex: 3,
-                fontWeight: "bold",
-                fontSize: "1rem",
-                color: "#111",
-                letterSpacing: 0,
-                marginTop: "2px",
+                width: "54px",
+                height: "54px",
+                transform: `translate(-50%, -50%) translate(${MINIAPP_BEAN_LEFT}px, ${MINIAPP_BEAN_TOP}px)`,
+                left: "50%",
+                top: "50%",
+                zIndex: 2,
               }}
             >
-              SHARE
-            </span>
+              <img
+                src="/bean2.png"
+                alt="bean2"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+            {/* Miniapp Button */}
+            <div
+              style={{
+                position: "relative",
+                width: "88px",
+                height: "88px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "0px",
+                cursor: "pointer",
+                left: MINIAPP_BTN_LEFT,
+                top: MINIAPP_BTN_TOP,
+              }}
+              onClick={() => {
+                sdk.actions.addFrame();
+              }}
+            >
+              <img
+                src="/miniapp-line.png"
+                alt="miniapp-line"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  position: "absolute",
+                  zIndex: 1,
+                  marginTop: "8px",
+                }}
+              />
+              <span
+                style={{
+                  position: "relative",
+                  zIndex: 3,
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  color: "#111",
+                  letterSpacing: 0,
+                  marginTop: "0.5px",
+                  textAlign: "center",
+                  lineHeight: 1.55,
+                }}
+              >
+                ADD<br /><span style={{ lineHeight: 1, marginTop: '-6px', display: 'block' }}>MINIAPP</span>
+              </span>
+            </div>
+          </div>
+          {/* Right: SHARE button and bean (existing) */}
+          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+            {/* Bean1 */}
+            <div
+              style={{
+                position: "absolute",
+                width: "54px",
+                height: "54px",
+                transform: `translate(-50%, -50%) translate(${SHARE_BEAN_LEFT}px, ${SHARE_BEAN_TOP}px)`,
+                left: "50%",
+                top: "50%",
+                zIndex: 2,
+              }}
+            >
+              <img
+                src="/pp0503-45.png"
+                alt="bean1"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                }}
+              />
+            </div>
+            {/* Share Button */}
+            <div
+              style={{
+                position: "relative",
+                width: "80px",
+                height: "80px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                marginBottom: "0px",
+                cursor: "pointer",
+                left: SHARE_BTN_LEFT,
+                top: SHARE_BTN_TOP,
+              }}
+              onClick={() => {
+                const frame = {
+                  version: "next",
+                  imageUrl: "https://beings-club.vercel.app/api/og",
+                  button: {
+                    title: "Join Beings Club",
+                    action: {
+                      type: "launch_frame",
+                      url: "https://beings-club.vercel.app",
+                      name: "Beings Club",
+                      splashImageUrl: "https://beings-club.vercel.app/share-frame.png",
+                      splashBackgroundColor: "#F1ECCE"
+                    }
+                  }
+                };
+                sdk.actions.addFrame();
+              }}
+            >
+              <img
+                src="/share-line.png"
+                alt="share-line"
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  position: "absolute",
+                  zIndex: 1,
+                }}
+              />
+              <span
+                style={{
+                  position: "relative",
+                  zIndex: 3,
+                  fontWeight: "bold",
+                  fontSize: "1rem",
+                  color: "#111",
+                  letterSpacing: 0,
+                  marginTop: "2px",
+                }}
+              >
+                SHARE
+              </span>
+            </div>
           </div>
         </div>
         {/* Row 5: empty for spacing */}
