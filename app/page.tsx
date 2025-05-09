@@ -426,11 +426,10 @@ export default function BeingsClubWelcome() {
                 if ('composeIntent' in sdk.actions) {
                   // @ts-expect-error: composeIntent may not be typed in SDK yet
                   await sdk.actions.composeIntent({
-                    text: 'hihi this is a test https://beings-club.vercel.app'
+                    text: 'hihi this is a test'
                   });
                 } else {
-                  const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent('hihi this is a test https://beings-club.vercel.app')}`;
-                  window.open(shareUrl, '_blank');
+                  window.open('https://beings-club.vercel.app', '_blank');
                 }
               }}
             >
