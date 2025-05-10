@@ -5,7 +5,7 @@
     "signature": "MHhlNTIzMDg1ZDQ4ZTQ2YzQ4MmY5MDUxYzU4MmFkYjk2OTI1MmJkMDlhOWQ1MTNiMzBhNWM1ODZiMmUzZmExNzM0MjYwY2UzNzYxMWVjMTkzZWIxMWNkNzQzYWE0YWY5NDNjZDliOTI4Njg3ZTFhMjI4OGI5ODZkYmEzODA3Y2JmZTFj"
   },
   "frame": {
-    "version": "1",
+    "version": "next",
     "name": "Beings Club",
     "iconUrl": "https://beings-club.vercel.app/icon.png",
     "splashImageUrl": "https://beings-club.vercel.app/splash.png",
