@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { sdk } from "@farcaster/frame-sdk";
-import { useAddFrame, useNotification } from '@coinbase/onchainkit/minikit';
 
 // Responsive positions for stars/explosions based on your reference image
 const ICONS = [
@@ -67,10 +66,6 @@ export default function BeingsClubWelcome() {
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
   const [isWarping, setIsWarping] = useState(false);
-  const addFrame = useAddFrame();
-  const sendNotification = useNotification();
-  const [frameToken, setFrameToken] = useState<string | null>(null);
-  const [frameUrl, setFrameUrl] = useState<string | null>(null);
 
   // === BEGIN: Button/Bean Position Controls ===
   // You can easily tweak these numbers to move the beans/buttons
@@ -322,77 +317,6 @@ export default function BeingsClubWelcome() {
             animationDelay: "0.3s"
           }}
         >
-          {/* Left: ADD MINIAPP button and bean */}
-          <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-            {/* Bean2 */}
-            <div
-              style={{
-                position: "absolute",
-                width: "54px",
-                height: "54px",
-                transform: `translate(-50%, -50%) translate(${MINIAPP_BEAN_LEFT}px, ${MINIAPP_BEAN_TOP}px)`,
-                left: "50%",
-                top: "50%",
-                zIndex: 2,
-              }}
-            >
-              <img
-                src="/bean2.png"
-                alt="bean2"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "contain",
-                }}
-              />
-            </div>
-            {/* Miniapp Button */}
-            <div
-              style={{
-                position: "relative",
-                width: "88px",
-                height: "88px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: "0px",
-                cursor: "pointer",
-                left: MINIAPP_BTN_LEFT,
-                top: MINIAPP_BTN_TOP,
-              }}
-              onClick={() => {
-                sdk.actions.addFrame();
-              }}
-            >
-              <img
-                src="/miniapp-line.png"
-                alt="miniapp-line"
-                style={{
-                  width: "100%",
-                  height: "100%",
-                  objectFit: "contain",
-                  position: "absolute",
-                  zIndex: 1,
-                  marginTop: "8px",
-                }}
-              />
-              <span
-                style={{
-                  position: "relative",
-                  zIndex: 3,
-                  fontWeight: "bold",
-                  fontSize: "0.85rem",
-                  color: "#111",
-                  letterSpacing: 0,
-                  marginTop: "0.5px",
-                  textAlign: "center",
-                  lineHeight: 1.75,
-                }}
-              >
-                ADD<br /><span style={{ lineHeight: 1, marginTop: '-6px', display: 'block' }}>MINIAPP</span>
-              </span>
-            </div>
-          </div>
           {/* Right: SHARE button and bean (existing) */}
           <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             {/* Bean1 */}
@@ -464,34 +388,6 @@ export default function BeingsClubWelcome() {
               </span>
             </div>
           </div>
-          {/* MiniKit Add Frame Button */}
-          <button
-            style={{ margin: '8px', padding: '8px 16px', borderRadius: 8, background: '#eee', border: '1px solid #ccc', fontWeight: 'bold', cursor: 'pointer' }}
-            onClick={async () => {
-              const result = await addFrame();
-              if (result) {
-                setFrameToken(result.token);
-                setFrameUrl(result.url);
-                alert('Frame added! Token and URL stored.');
-              }
-            }}
-          >
-            Add Frame (MiniKit)
-          </button>
-          {/* MiniKit Send Notification Button */}
-          <button
-            style={{ margin: '8px', padding: '8px 16px', borderRadius: 8, background: '#eee', border: '1px solid #ccc', fontWeight: 'bold', cursor: 'pointer' }}
-            disabled={!frameToken || !frameUrl}
-            onClick={() => {
-              sendNotification({
-                title: 'Beings Club',
-                body: 'The event is starting soon!'
-              });
-              alert('Notification sent!');
-            }}
-          >
-            Send Notification
-          </button>
         </div>
         {/* Row 5: empty for spacing */}
         <div />
