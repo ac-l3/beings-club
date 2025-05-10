@@ -57,7 +57,7 @@ const ICONS = [
   }
 ];
 
-const HOLD_DURATION = 700; // ms
+const HOLD_DURATION = 400; // ms
 
 export default function BeingsClubWelcome() {
   const [revealed, setRevealed] = useState(false);
@@ -69,16 +69,11 @@ export default function BeingsClubWelcome() {
 
   // === BEGIN: Button/Bean Position Controls ===
   // You can easily tweak these numbers to move the beans/buttons
-  const GROUP_LEFT_OFFSET = -10; // px, negative = move group left, positive = right
-  const MINIAPP_BEAN_LEFT = -15; // px, negative = left of button center
-  const MINIAPP_BEAN_TOP = -49;   // px, negative = above button
-  const MINIAPP_BTN_LEFT = -110;     // px, relative to group center
-  const MINIAPP_BTN_TOP = -20;      // px
-
-  const SHARE_BEAN_LEFT = -240;      // px, negative = left of button center
-  const SHARE_BEAN_TOP = -77;     // px, negative = above button
+  const GROUP_LEFT_OFFSET = 0; // px, negative = move group left, positive = right
+  const SHARE_BEAN_LEFT = -140;      // px, negative = left of button center
+  const SHARE_BEAN_TOP = -60;     // px, negative = above button
   const SHARE_BTN_LEFT = -140;     // px, relative to group center
-  const SHARE_BTN_TOP = 10;        // px
+  const SHARE_BTN_TOP = 0;        // px
   // === END: Button/Bean Position Controls ===
 
   useEffect(() => {
