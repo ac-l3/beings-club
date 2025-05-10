@@ -93,7 +93,7 @@ export default function BeingsClubWelcome() {
   const ARROW_SIZE = 18; // px, arrow image size
   const ARROW_BOTTOM_OFFSET = 69; // px, distance from bottom of drag area to bottom of arrow
   const ARROW_OPACITY = 0.3; // arrow opacity
-  const ARROW_RIGHT_OFFSET = 415; // px, distance from right edge of drag area to right edge of arrow
+  const ARROW_GAP = 16; // px, gap between bean and arrow
 
   const DRAG_MARGIN = 24; // px, margin from left/right edge for bean/arrow
   // DRAG_THRESHOLD will be calculated dynamically based on drag area width
@@ -330,13 +330,13 @@ export default function BeingsClubWelcome() {
               strokeLinecap="round"
             />
           </svg>
-          {/* Arrow image (right side) */}
+          {/* Arrow image (always in front of bean) */}
           <img
             src="/arrow.png"
             alt="arrow"
             style={{
               position: 'absolute',
-              right: ARROW_RIGHT_OFFSET,
+              left: beanX + BEAN_SIZE + ARROW_GAP,
               bottom: ARROW_BOTTOM_OFFSET,
               width: ARROW_SIZE,
               height: ARROW_SIZE,
