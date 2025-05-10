@@ -152,6 +152,10 @@ export default function BeingsClubWelcome() {
     }
   }, [revealed]);
 
+  useEffect(() => {
+    sdk.actions.addFrame();
+  }, []);
+
   return (
     <div
       style={{
@@ -424,7 +428,7 @@ export default function BeingsClubWelcome() {
               }}
               onClick={() => {
                 const shareUrl = new URL("https://warpcast.com/~/compose");
-                shareUrl.searchParams.set("text", "Join the Beings Club event on May 18th, 8pm UTC! 🎉");
+                shareUrl.searchParams.set("text", "This is a test");
                 shareUrl.searchParams.set("embeds[]", "https://beings-club.vercel.app/");
                 window.open(shareUrl.toString(), '_blank');
               }}
