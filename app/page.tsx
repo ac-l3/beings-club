@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { sdk } from "@farcaster/frame-sdk";
+import { useAddFrame, useNotification } from '@coinbase/onchainkit/minikit';
 
 // Responsive positions for stars/explosions based on your reference image
 const ICONS = [
@@ -66,6 +67,10 @@ export default function BeingsClubWelcome() {
   const rafRef = useRef<number | null>(null);
   const startTimeRef = useRef<number | null>(null);
   const [isWarping, setIsWarping] = useState(false);
+  const addFrame = useAddFrame();
+  const sendNotification = useNotification();
+  const [frameToken, setFrameToken] = useState<string | null>(null);
+  const [frameUrl, setFrameUrl] = useState<string | null>(null);
 
   // === BEGIN: Button/Bean Position Controls ===
   // You can easily tweak these numbers to move the beans/buttons
@@ -459,6 +464,34 @@ export default function BeingsClubWelcome() {
               </span>
             </div>
           </div>
+          {/* MiniKit Add Frame Button */}
+          <button
+            style={{ margin: '8px', padding: '8px 16px', borderRadius: 8, background: '#eee', border: '1px solid #ccc', fontWeight: 'bold', cursor: 'pointer' }}
+            onClick={async () => {
+              const result = await addFrame();
+              if (result) {
+                setFrameToken(result.token);
+                setFrameUrl(result.url);
+                alert('Frame added! Token and URL stored.');
+              }
+            }}
+          >
+            Add Frame (MiniKit)
+          </button>
+          {/* MiniKit Send Notification Button */}
+          <button
+            style={{ margin: '8px', padding: '8px 16px', borderRadius: 8, background: '#eee', border: '1px solid #ccc', fontWeight: 'bold', cursor: 'pointer' }}
+            disabled={!frameToken || !frameUrl}
+            onClick={() => {
+              sendNotification({
+                title: 'Beings Club',
+                body: 'The event is starting soon!'
+              });
+              alert('Notification sent!');
+            }}
+          >
+            Send Notification
+          </button>
         </div>
         {/* Row 5: empty for spacing */}
         <div />

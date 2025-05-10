@@ -22,15 +22,12 @@ export default function RootLayout({
         {/* Farcaster Mini App Embed Meta Tag (correct format) */}
         <meta
           name="fc:frame"
-          content='{"version":"next","imageUrl":"https://beings-club.vercel.app/share-frame.png","button":{"title":"Open Beings Club","action":{"type":"launch_frame","url":"https://beings-club.vercel.app","name":"Beings Club","splashImageUrl":"https://beings-club.vercel.app/splash.png","splashBackgroundColor":"#F1ECCE"}}}'
+          content='{"version":"next","imageUrl":"https://beings-club.vercel.app/embed-preview.png","button":{"title":"Open Beings Club","action":{"type":"launch_frame","url":"https://beings-club.vercel.app","name":"Beings Club","splashImageUrl":"https://beings-club.vercel.app/splash.png","splashBackgroundColor":"#F1ECCE"}}}'
         />
-        <meta property="fc:frame:image" content="https://beings-club.vercel.app/share-frame.png" />
         {/* Open Graph Meta Tags for Link Previews */}
         <meta property="og:title" content="Beings Club" />
         <meta property="og:description" content="Join the Beings Club event on Farcaster Mini Apps!" />
-        <meta property="og:image" content="https://beings-club.vercel.app/share-frame.png" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
+        <meta property="og:image" content="https://beings-club.vercel.app/embed-preview.png" />
         <meta property="og:url" content="https://beings-club.vercel.app/" />
       </head>
       <body className="bg-background">

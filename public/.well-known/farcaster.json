@@ -10,7 +10,6 @@
     "iconUrl": "https://beings-club.vercel.app/icon.png",
     "splashImageUrl": "https://beings-club.vercel.app/splash.png",
     "splashBackgroundColor": "#F1ECCE",
-    "homeUrl": "https://beings-club.vercel.app",
-    "ogImageUrl": "https://beings-club.vercel.app/share-frame.png"
+    "homeUrl": "https://beings-club.vercel.app"
   }
 } 
