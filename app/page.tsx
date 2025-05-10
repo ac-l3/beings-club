@@ -83,9 +83,9 @@ export default function BeingsClubWelcome() {
   // === END: Button/Bean Position Controls ===
 
   // === BEGIN: Drag Area Controls (edit these for layout/alignment) ===
-  const DRAG_AREA_WIDTH = 340; // px, width of ground image
-  const DRAG_AREA_HEIGHT = 90; // px, height of ground image
-  const GROUND_BOTTOM_OFFSET = 0; // px, distance from bottom of drag area to bottom of ground image
+  // SVG ground is now 100% width, height is fixed
+  const DRAG_AREA_HEIGHT = 90; // px, height of drag area and SVG
+  const GROUND_HEIGHT = 57; // px, height of SVG ground lines
 
   const BEAN_SIZE = 64; // px, bean image size
   const BEAN_BOTTOM_OFFSET = 47; // px, distance from bottom of drag area to bottom of bean
@@ -93,11 +93,25 @@ export default function BeingsClubWelcome() {
   const ARROW_SIZE = 18; // px, arrow image size
   const ARROW_BOTTOM_OFFSET = 69; // px, distance from bottom of drag area to bottom of arrow
   const ARROW_OPACITY = 0.3; // arrow opacity
-  const ARROW_RIGHT_OFFSET = 255; // px, distance from right edge of drag area to right edge of arrow
+  const ARROW_RIGHT_OFFSET = 415; // px, distance from right edge of drag area to right edge of arrow
 
   const DRAG_MARGIN = 24; // px, margin from left/right edge for bean/arrow
-  const DRAG_THRESHOLD = DRAG_AREA_WIDTH - BEAN_SIZE - DRAG_MARGIN; // px, how far to drag to trigger
+  // DRAG_THRESHOLD will be calculated dynamically based on drag area width
   // === END: Drag Area Controls ===
+
+  // Responsive drag threshold
+  const [dragAreaWidth, setDragAreaWidth] = useState(0);
+  useEffect(() => {
+    const updateWidth = () => {
+      if (dragAreaRef.current) {
+        setDragAreaWidth(dragAreaRef.current.offsetWidth);
+      }
+    };
+    updateWidth();
+    window.addEventListener('resize', updateWidth);
+    return () => window.removeEventListener('resize', updateWidth);
+  }, []);
+  const DRAG_THRESHOLD = dragAreaWidth - BEAN_SIZE - DRAG_MARGIN;
 
   useEffect(() => {
     sdk.actions.ready();
@@ -272,7 +286,7 @@ export default function BeingsClubWelcome() {
             left: '50%',
             bottom: '4vh',
             transform: `translateX(-50%)`,
-            width: DRAG_AREA_WIDTH,
+            width: '100vw',
             height: DRAG_AREA_HEIGHT,
             zIndex: 20,
             display: 'flex',
@@ -282,21 +296,40 @@ export default function BeingsClubWelcome() {
             userSelect: 'none',
           }}
         >
-          {/* Ground image */}
-          <img
-            src="/ground.png"
-            alt="ground"
+          {/* Responsive SVG ground */}
+          <svg
+            width="100%"
+            height={GROUND_HEIGHT}
+            viewBox={`0 0 1000 ${GROUND_HEIGHT}`}
             style={{
               position: 'absolute',
               left: 0,
-              bottom: GROUND_BOTTOM_OFFSET,
-              width: DRAG_AREA_WIDTH,
-              height: DRAG_AREA_HEIGHT,
+              bottom: 0,
+              width: '100%',
+              height: GROUND_HEIGHT,
               zIndex: 1,
               pointerEvents: 'none',
-              objectFit: 'contain',
+              display: 'block',
             }}
-          />
+            preserveAspectRatio="none"
+          >
+            {/* Main thick wavy line */}
+            <path
+              d="M0,24 Q200,0 400,20 T1000,18"
+              stroke="#111"
+              strokeWidth="8"
+              fill="none"
+              strokeLinecap="round"
+            />
+            {/* Second thinner wavy line above */}
+            <path
+              d="M0,14 Q200,-6 400,10 T1000,8"
+              stroke="#111"
+              strokeWidth="4"
+              fill="none"
+              strokeLinecap="round"
+            />
+          </svg>
           {/* Arrow image (right side) */}
           <img
             src="/arrow.png"
