@@ -12,6 +12,7 @@
     "@coinbase/onchainkit": "^0.38.10",
     "@tanstack/react-query": "^5",
     "next": "14.2.15",
+    "node-fetch": "^3.3.2",
     "react": "^18",
     "react-dom": "^18",
     "react-hot-toast": "^2.5.2",

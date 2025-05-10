@@ -58,7 +58,7 @@ const ICONS = [
   }
 ];
 
-const HOLD_DURATION = 400; // ms
+const HOLD_DURATION = 700; // ms
 
 export default function BeingsClubWelcome() {
   const [revealed, setRevealed] = useState(false);
