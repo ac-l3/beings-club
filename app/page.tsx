@@ -412,10 +412,8 @@ export default function BeingsClubWelcome() {
             );
           })}
           {/* /beingsclub text in lower left, aligned to grid */}
-          <a
-            href="https://warpcast.com/~/channel/beings-club"
-            target="_blank"
-            rel="noopener noreferrer"
+          <div
+            onClick={() => sdk.actions.openUrl("https://warpcast.com/~/channel/beings-club")}
             style={{
               position: "absolute",
               left: "50%",
@@ -430,10 +428,11 @@ export default function BeingsClubWelcome() {
               zIndex: 9999,
               textDecoration: "none",
               pointerEvents: "auto",
+              cursor: "pointer"
             }}
           >
             /beings-club
-          </a>
+          </div>
         </div>
       </div>
     </div>
