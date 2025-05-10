@@ -422,15 +422,11 @@ export default function BeingsClubWelcome() {
                 left: SHARE_BTN_LEFT,
                 top: SHARE_BTN_TOP,
               }}
-              onClick={async () => {
-                if ('composeIntent' in sdk.actions) {
-                  // @ts-expect-error: composeIntent may not be typed in SDK yet
-                  await sdk.actions.composeIntent({
-                    text: 'hihi this is a test'
-                  });
-                } else {
-                  window.open('https://beings-club.vercel.app', '_blank');
-                }
+              onClick={() => {
+                const shareUrl = new URL("https://warpcast.com/~/compose");
+                shareUrl.searchParams.set("text", "Join the Beings Club event on May 18th, 8pm UTC! 🎉");
+                shareUrl.searchParams.set("embeds[]", "https://beings-club.vercel.app/");
+                window.open(shareUrl.toString(), '_blank');
               }}
             >
               <img
