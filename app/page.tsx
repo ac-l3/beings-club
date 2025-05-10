@@ -354,7 +354,7 @@ export default function BeingsClubWelcome() {
                 const shareUrl = new URL("https://warpcast.com/~/compose");
                 shareUrl.searchParams.set("text", "This is a test");
                 shareUrl.searchParams.set("embeds[]", "https://beings-club.vercel.app/");
-                window.open(shareUrl.toString(), '_blank');
+                sdk.actions.openUrl(shareUrl.toString());
               }}
             >
               <img
